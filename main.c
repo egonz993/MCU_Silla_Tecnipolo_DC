@@ -617,6 +617,7 @@ void FUN_LA(){
 	HAL_GPIO_TogglePin(OUT_LA_GPIO_Port, OUT_LA_Pin);
 	while(HAL_GPIO_ReadPin(IN_LA_GPIO_Port, IN_LA_Pin)==GPIO_PIN_RESET);
 
+	STATE = STATE_SBY;
 	BEEP();
 }
 
@@ -637,7 +638,12 @@ void FUN_ESC(){
 		HAL_GPIO_WritePin(OUT_MB_DT_GPIO_Port, OUT_MB_DT_Pin, GPIO_PIN_SET);
 	}
 
+	HAL_GPIO_WritePin(OUT_SE_GPIO_Port, OUT_SE_Pin, GPIO_PIN_RESET);
+	HAL_Delay(TIME_OFF);
+	HAL_GPIO_WritePin(OUT_MB_DT_GPIO_Port, OUT_MB_DT_Pin, GPIO_PIN_RESET);
+
 	STATE = STATE_SBY;
+	FLAG_STOP_MOTORS = 0;
 	BEEP();
 }
 
@@ -659,7 +665,11 @@ void FUN_M0(){
 		HAL_Delay(TIME_OFF);
 		HAL_GPIO_WritePin(OUT_MB_DT_GPIO_Port, OUT_MB_DT_Pin, GPIO_PIN_SET);
 	}
+
+	HAL_GPIO_WritePin(OUT_MB_DT_GPIO_Port, OUT_MB_DT_Pin, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(OUT_SE_GPIO_Port, OUT_SE_Pin, GPIO_PIN_RESET);
 	BEEP();
+
 
 	//Bajar Silla hasta el microsuiche
 	read_niv34();
@@ -671,6 +681,10 @@ void FUN_M0(){
 		HAL_Delay(TIME_OFF);
 		HAL_GPIO_WritePin(OUT_MB_DT_GPIO_Port, OUT_MB_DT_Pin, GPIO_PIN_SET);
 	}
+
+	HAL_GPIO_WritePin(OUT_MB_DT_GPIO_Port, OUT_MB_DT_Pin, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(OUT_BS_GPIO_Port, OUT_BS_Pin, GPIO_PIN_RESET);
+
 
 	FLAG_STOP_MOTORS = 0;
 	STATE = STATE_SBY;
@@ -794,7 +808,7 @@ void FUN_INI(){
 }
 
 void All_Off(){
-
+	FLAG_STOP_MOTORS = 0;
 	HAL_GPIO_WritePin(OUT_MB_DT_GPIO_Port, OUT_MB_DT_Pin, GPIO_PIN_RESET);
 	HAL_Delay(TIME_OFF);
 
@@ -812,63 +826,52 @@ void All_Off(){
 
 int stop_teclas(){
 
-	if(FLAG_STOP_MOTORS == 0){
+	if(FLAG_STOP_MOTORS == 0){	//M0 = Activacion de tecla... M1 = Loop de funcion
 		HAL_Delay(1000);
 		FLAG_STOP_MOTORS = 1;
 	}else if(FLAG_STOP_MOTORS == 2){
-		All_Off();
 		return HAL_ERROR;
 	}
 
 
 	if(HAL_GPIO_ReadPin(IN_SS_GPIO_Port, IN_SS_Pin)==GPIO_PIN_RESET){
 		FLAG_STOP_MOTORS = 2;
-		All_Off();
 		return HAL_ERROR;
 	}
 	else if(HAL_GPIO_ReadPin(IN_BS_GPIO_Port, IN_BS_Pin)==GPIO_PIN_RESET){
 		FLAG_STOP_MOTORS = 2;
-		All_Off();
 		return HAL_ERROR;
 	}
 	else if(HAL_GPIO_ReadPin(IN_SE_GPIO_Port, IN_SE_Pin)==GPIO_PIN_RESET){
 		FLAG_STOP_MOTORS = 2;
-		All_Off();
 		return HAL_ERROR;
 	}
 	else if(HAL_GPIO_ReadPin(IN_BE_GPIO_Port, IN_BE_Pin)==GPIO_PIN_RESET){
 		FLAG_STOP_MOTORS = 2;
-		All_Off();
 		return HAL_ERROR;
 	}
 	else if(HAL_GPIO_ReadPin(IN_M0_GPIO_Port, IN_M0_Pin)==GPIO_PIN_RESET){
 		FLAG_STOP_MOTORS = 2;
-		All_Off();
 		return HAL_ERROR;
 	}
 	else if(HAL_GPIO_ReadPin(IN_M1_GPIO_Port, IN_M1_Pin)==GPIO_PIN_RESET){
 		FLAG_STOP_MOTORS = 2;
-		All_Off();
 		return HAL_ERROR;
 	}
 	else if(HAL_GPIO_ReadPin(IN_M2_GPIO_Port, IN_M2_Pin)==GPIO_PIN_RESET){
 		FLAG_STOP_MOTORS = 2;
-		All_Off();
 		return HAL_ERROR;
 	}
 	else if(HAL_GPIO_ReadPin(IN_M3_GPIO_Port, IN_M3_Pin)==GPIO_PIN_RESET){
 		FLAG_STOP_MOTORS = 2;
-		All_Off();
 		return HAL_ERROR;
 	}
 	else if(HAL_GPIO_ReadPin(IN_ESC_GPIO_Port, IN_ESC_Pin)==GPIO_PIN_RESET){
 		FLAG_STOP_MOTORS = 2;
-		All_Off();
 		return HAL_ERROR;
 	}
 	else if(HAL_GPIO_ReadPin(IN_LA_GPIO_Port, IN_LA_Pin)==GPIO_PIN_RESET){
 		FLAG_STOP_MOTORS = 2;
-		All_Off();
 		return HAL_ERROR;
 	}
 	else {
